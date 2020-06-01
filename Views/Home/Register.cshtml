@@ -1,0 +1,109 @@
+﻿@model My_Social_Media_Channel.Models.User
+
+@{
+    ViewBag.Title = "Register";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">Create a new account.</h4>
+        <div class="message alert-info"></div>
+    </div>
+    <div class="card-body">
+        @Html.ValidationSummary("", new { @class = "text-danger" })
+        <div class="form-group row">
+            @Html.LabelFor(m => m.FirstName, new { @class = "col-md-2 col-form-label" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(m => m.LastName, new { @class = "col-md-2 col-form-label" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(m => m.Email, new { @class = "col-md-2 col-form-label" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            @Html.LabelFor(m => m.Password, new { @class = "col-md-2 col-form-label" })
+            <div class="col-md-4">
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 col-form-label" })
+            <div class="col-md-4">
+                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="card-footer footer-btn">
+        <button id="submit" value="Register" class="btn btn-sm btn-outline-brand float-right">Register</button>
+</div>
+</div>
+
+
+
+@section scripts
+{
+    <script>
+        ///Scripts/project-scripts/orderSearch.js
+
+        function delay(callback, ms) {
+            var timer = 0;
+            return function () {
+                var context = this, args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    callback.apply(context, args);
+                }, ms || 0);
+            };
+        }
+
+        $(document).ready(function () {
+
+            $("#submit").click(function () {
+                submit();
+            });
+
+            var submit = () => {
+                var xhr;
+                var FirstName = $("#FirstName").val();
+                var LastName = $("#LastName").val();
+                var Email = $("#Email").val();
+                var Password = $("#Password").val();
+                var ConfirmPassword = $("#ConfirmPassword").val();
+
+                var data = `{
+                         "FirstName" : "${FirstName}",
+                         "LastName": "${LastName}",
+                         "Email" : "${Email}",
+                         "Password": "${Password}",
+                         "ConfirmPassword": "${ConfirmPassword}"
+                        }`;
+
+                if (typeof xhr !== 'undefined')
+                    xhr.abort();
+                 xhr = jQuery.ajax({
+                    type: "post",
+                    dataType: "json",
+                     url: "/api/Auth/Register",
+                     contentType: "application/json; charset=utf-8",
+                     data: data,
+                    success: function (data) {
+                        $(".message").html(data.Message);
+                    },
+                     error: function (data) {
+                         $(".message").html("Fail to add Status Code " + data.status);
+                    }
+                });
+            }
+        });
+
+    </script>
+
+}

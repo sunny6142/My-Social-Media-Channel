@@ -1,0 +1,92 @@
+﻿@{
+    string token = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Hi <span class="userName"></span></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                </li>
+                <li class="nav-item">
+                    @Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)
+                </li>
+                <li class="nav-item">
+                    @Html.ActionLink("API", "Index", "Help", new { area = "" }, null)
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container body-content">
+        @RenderBody()
+
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    @RenderSection("scripts", required: false)
+
+    <script>
+
+        $(document).ready(function () {
+
+           // console.log(window.localStorage.getItem("token"));
+            var userName = "";
+            if (localStorage.getItem("token") != null || localStorage.getItem("token") != undefined) {
+                userName = localStorage.getItem("token").split('#')[0];
+             //   console.log(localStorage.getItem("token"))
+            }
+
+            if (userName != "") {
+                $(".userName").html(atob(userName));
+                $(".login").html("<div class='card' style='width: 18rem;'><button id='logout'>Log Out</button><a href='/DashBoard' class='btn btn-info'>Posts</a></div>");
+            }
+
+
+            $("#logout").click(function () {
+                $(".message").html("Processing..");
+                if (typeof xhr !== 'undefined')
+                    xhr.abort();
+                xhr = jQuery.ajax({
+                    type: "post",
+                    dataType: "json",
+                    url: "/api/Auth/LogOut",
+                    contentType: "application/json; charset=utf-8",
+                    headers: { "Authorization": localStorage.getItem('token') },
+                    success: function (data) {
+                        localStorage.clear();
+                        location.reload();
+                        $(".message").html(data.Message);
+                    },
+                    error: function (data) {
+                        localStorage.clear();
+                        location.reload();
+                        $(".message").html("Fail to add Status Code " + data.status);
+                    }
+                });
+            });
+        })
+    </script>
+</body>
+</html>
+
+    

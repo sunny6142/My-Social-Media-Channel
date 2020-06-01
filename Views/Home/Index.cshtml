@@ -1,0 +1,104 @@
+﻿@model IEnumerable<My_Social_Media_Channel.Models.Post>
+
+    <div class="jumbotron">
+        <div class="message alert-info"></div>
+        <div class="card login">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-7">
+                        <h4 class="mb-0 ">Login <small class="text-danger">[Email and Password are Case Sensitivity]</small></h4>
+                    </div>
+                    <div class="col-5">
+                        <div class="float-right">
+                            @Html.ActionLink("Register", "Register", "Home", null, new { @class = "btn btn-brand fas fa-plus", @title = "" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                <div class="form-group row">
+                    
+                    <div class="col-md-4">
+                        Email :
+                        <input type="email" id="Email" class="form-control" required="true" />
+                    </div>
+                    <div class="col-md-4">
+                        Password :
+                        <input type="password" id="Password" class="form-control" required="true" />
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer footer-btn">
+                <button id="login" class="btn btn-sm btn-outline-brand float-right">Login</button>
+            </div>
+        </div>
+    </div>
+<div class="row">
+
+    @if (Model != null)
+    {
+        foreach (var item in Model)
+        {
+            <div class="card" style="width: 18rem;">
+                <img src="@item.url" class="card-img-top" alt="" style="150px">
+                <div class="card-body">
+                    <h5 class="card-title">@item.PostBy</h5> <small><h6>@item.CreateOn</h6></small>
+                    <p class="card-text"> @item.Message</p>
+                </div>
+            </div>
+        }
+    }
+
+</div>
+
+@section scripts
+{
+    <script>
+
+        $(document).ready(function () {
+
+            $("#login").click(function () {
+                submit();
+            });
+
+            var submit = () => {
+
+                $(".message").html("Processing..");
+
+                var Email = $("#Email").val();
+                var Password = $("#Password").val();
+
+                var data = `{
+                         "Email" : "${Email}",
+                         "Password": "${Password}"
+                        }`;
+
+                if (typeof xhr !== 'undefined')
+                    xhr.abort();
+                 xhr = jQuery.ajax({
+                    type: "post",
+                    dataType: "json",
+                     url: "/api/Auth/Login",
+                    contentType: "application/json; charset=utf-8",
+                     data: data,
+                     headers: { "Authorization": localStorage.getItem("token") },
+                     success: function (data) {
+                         $(".message").html(data.Message + "<br> token : " + data.AccessToken);
+                         //  localStorage.token = data.AccessToken;
+                         localStorage.setItem('token', data.AccessToken);
+                         location.reload();
+                    },
+                     error: function (data) {
+                         location.reload();
+                         $(".message").html(data.Message);
+                    }
+                });
+            }
+
+        });
+
+    </script>
+
+}

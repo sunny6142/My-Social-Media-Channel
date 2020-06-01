@@ -1,0 +1,128 @@
+﻿@model IEnumerable<My_Social_Media_Channel.Models.Post>
+@{
+    int Sno = 1;
+}
+<div class="card">
+    <div class="card-header bg-white border-brand border-top-0 border-left-0 border-right-0">
+        <div class="row">
+            <div class="col-1">
+                @Html.ActionLink("Create New", "Create", "DashBoard", null, new { @class = "btn btn-outline-brand text-info fa fa-arrow-left" })
+            </div>
+            <h4 class="col text-brand"></h4>
+            <div class="col alert-info message">
+                [you are only allowed to modified your own post]
+            </div>
+            <div class="col-3">
+                <div class="float-right">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-brand table-sm ">
+            <thead class="thead-brand">
+                <tr>
+                    <th colspan="2">
+                        S.No
+                    </th>
+                    <th colspan="3">
+                        Message
+                    </th>
+                    <th colspan="2">
+                        Image
+                    </th>
+                    <th colspan="2">
+                        CreatedOn
+                    </th>
+                    <th colspan="3">Action</th>
+
+                </tr>
+            </thead>
+
+            <tbody id="fhbody">
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td colspan="2">
+                            @Sno
+                        </td>
+                        <td colspan="3">
+                            @item.Message
+                        </td>
+                        <td colspan="2">
+                            <img src="@item.url" class="card-img-top" style="max-width:100px; max-height:100px ">
+                        </td>
+                        <td colspan="2">
+                            @item.CreateOn
+                        </td>
+
+                        <td colspan="3">
+                            @Html.ActionLink(" Edit ", "Edit", new { id = item.Postid.ToString() }, new { @class = "fa fa-edit btn-sm mb-1 btn btn-outline-secondary", @title = "Edit Product" })
+                           
+                            <button class = "fa fa-edit btn-sm mb-1 btn btn-outline-secondary" onclick="DeletePost(`@item.Postid.ToString()`)">Delete</button>
+                        </td>
+                    </tr>
+
+                    Sno = Sno + 1;
+                }
+            </tbody>
+
+        </table>
+    </div>
+    <div class="card-footer bg-white border-brand border-bottom-0 border-left-0 border-right-0">
+        @Html.ActionLink(" ", "Index", "Home", null, new { @class = "btn btn-outline-brand fa fa-arrow-left" })
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script>
+
+        $(document).ready(function () {
+
+            $("#login").click(function () {
+                submit();
+            });
+
+            DeletePost = (postId)=> {
+
+                $(".message").html("Processing..");
+                var xhr;
+
+                var formData = new FormData();
+
+                
+                formData.append("PostId", postId);
+                console.log(formData);
+
+                if (typeof xhr !== 'undefined')
+                    xhr.abort();
+                 xhr = jQuery.ajax({
+                    type: "DELETE",
+                    dataType: "json",
+                     url: "/api/Post/DeletePost/?postId=" + postId,
+                    contentType: "application/json; charset=utf-8",
+                     data: FormData,
+                     headers: { "Authorization": localStorage.getItem("token") },
+                     success: function (data) {
+                         $(".message").html(data.Message);
+                         location.reload();
+                    },
+                     error: function (data) {
+                         $(".message").html("Error Code "+data.status);
+                    }
+                });
+            }
+
+        });
+
+    </script>
+
+}
+
+
+
+

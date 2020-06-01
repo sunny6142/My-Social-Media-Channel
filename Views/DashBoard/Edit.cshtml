@@ -1,0 +1,115 @@
+﻿@model IEnumerable<My_Social_Media_Channel.Models.Post>
+
+@{
+    ViewBag.Title = "Post";
+}
+
+<div class="card ">
+    <div class="card-header bg-white border-brand border-top-0 border-left-0 border-right-0">
+        <div class="row">
+            <div class="col-1">
+                @Html.ActionLink(" ", "Index", null, new { @class = "btn btn-outline-brand fa fa-arrow-left" })
+            </div>
+            <div class="col text-brand">
+                <div class="message alert-danger"></div>
+
+            </div>
+        </div>
+        <span class="img"></span>
+        <form class="row">
+            <div class="form-group col-12">
+
+                <input type="hidden" value="@ViewBag.id" id="id" name="id" />
+                <label for="image">Example file input</label>
+                <input type="file" class="form-control-file" id="image">
+            </div>
+            <div class="form-group col-12">
+                <label for="message" class="col-sm-2 col-form-label">Message</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="message">
+                </div>
+            </div>
+            <button id="submit" type="button" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        $('#submit').click(function () {
+            var form = new FormData();
+            $('.message').html("Processing...");
+            var Message = $("#message").val();
+            var file = $('#image')[0].files[0];
+
+            var guid = $("#id").val();
+
+            var formData = new FormData();
+
+            formData.append("Image", file);
+            formData.append("Message", Message);
+            formData.append("PostId", guid);
+            console.log(formData);
+
+            $.ajax({
+                type: "PUT",
+                url: "/api/Post/Update",
+                dataType: 'json',
+                contentType: "multipart/form-data",
+                headers: { "Authorization": localStorage.getItem('token') },
+                data: formData,
+                cache: false,
+                contentType: false, //must, tell jQuery not to process the data
+                processData: false,
+                success: function (data) {
+                    $(".message").html(data.Message);
+                },
+                error: function (data) {
+                    $(".message").html("Fail to add Status Code " + data.status);
+                }
+            });
+
+        });
+
+
+        $(document).ready(function () {
+
+            var guid = $("#id").val();
+
+            let mess = "Message";
+
+            var formData = new FormData();
+
+
+            if (typeof xhr !== 'undefined')
+                xhr.abort();
+            xhr = jQuery.ajax({
+                type: "GET",
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                url: "/api/Post/GetPostById/?PostId=" + guid,
+                contentType: "application/json; charset=utf-8",
+                data: formData,
+                headers: { "Authorization": localStorage.getItem("token") },
+                success: function (data) {
+                   /// $(".message").html(data.Message);
+                    $(".message").html("Only Owner Can Update this Post");
+                    $("#message").val(data.Data.Message);
+                    $(".img").html(`<img src=${data.Data.url} class="card-img-top" alt="" style="max-width:150px; max-hight:150px;">`);
+                    //  localStorage.token = data.AccessToken;;
+                  //  location.reload();
+                },
+                error: function (data) {
+                   // location.reload();
+                    $(".message").html("Error Code " + data.status);
+                }
+            });
+
+
+        
+        });
+    </script>
+
+}
