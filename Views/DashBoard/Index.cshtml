@@ -33,6 +33,9 @@
                         Image
                     </th>
                     <th colspan="2">
+                        Created By
+                    </th>
+                    <th colspan="2">
                         CreatedOn
                     </th>
                     <th colspan="3">Action</th>
@@ -44,26 +47,29 @@
 
                 @foreach (var item in Model)
                 {
-                    <tr>
-                        <td colspan="2">
-                            @Sno
-                        </td>
-                        <td colspan="3">
-                            @item.Message
-                        </td>
-                        <td colspan="2">
-                            <img src="@item.url" class="card-img-top" style="max-width:100px; max-height:100px ">
-                        </td>
-                        <td colspan="2">
-                            @item.CreateOn
-                        </td>
+                <tr>
+                    <td colspan="2">
+                        @Sno
+                    </td>
+                    <td colspan="3">
+                        @item.Message
+                    </td>
+                    <td colspan="2">
+                        <img src="@item.url" class="card-img-top" style="max-width:100px; max-height:100px ">
+                    </td>
+                    <td colspan="2">
+                        @item.PostBy
+                    </td>
+                    <td colspan="2">
+                        @item.CreateOn
+                    </td>
 
-                        <td colspan="3">
-                            @Html.ActionLink(" Edit ", "Edit", new { id = item.Postid.ToString() }, new { @class = "fa fa-edit btn-sm mb-1 btn btn-outline-secondary", @title = "Edit Product" })
-                           
-                            <button class = "fa fa-edit btn-sm mb-1 btn btn-outline-secondary" onclick="DeletePost(`@item.Postid.ToString()`)">Delete</button>
-                        </td>
-                    </tr>
+                    <td colspan="3">
+                        @Html.ActionLink(" Edit ", "Edit", new { id = item.Postid.ToString() }, new { @class = "fa fa-edit btn-sm mb-1 btn btn-outline-secondary", @title = "Edit Product" })
+
+                        <button class="fa fa-edit btn-sm mb-1 btn btn-outline-secondary" onclick="DeletePost(`@item.Postid.ToString()`)">Delete</button>
+                    </td>
+                </tr>
 
                     Sno = Sno + 1;
                 }
